@@ -74,6 +74,12 @@ history$SAC <- as.numeric(history$SAC)
 
 data_history <- history
 
+data_history$VALOR <- cut(data_history$VALOR, breaks = c(1,5000,50000,500000,5000000, 95000000), 
+                        labels = c("Cortas","Pequeñas","Medianas","Grandes","Muy Grandes"))
+
+data_history$PESO <- cut(data_history$PESO, breaks = c(1,5000,50000,500000,5000000, 95000000), 
+                       labels = c("xs","s","M","L","XL"))
+
 View(data_history)
 
 # CASO 1
@@ -88,16 +94,13 @@ rpart.plot(arbol1, type = 2, extra = 0, under = TRUE,
            main = "ADUANA Y VIA", cex = 0.5)
 
 
+
+
 # CASO 2
 
 data_case2 <- data_history %>%
   filter(Continente != "América")
 
-data_case2$VALOR <- cut(data_case2$VALOR, breaks = c(1,5000,50000,500000,5000000, 95000000), 
-                          labels = c("Cortas","Pequeñas","Medianas","Grandes","Muy Grandes"))
-
-data_case2$PESO <- cut(data_case2$PESO, breaks = c(1,5000,50000,500000,5000000, 95000000), 
-                         labels = c("xs","s","M","L","XL"))
 
 arbol2 <- rpart(PESO ~
                  Continente +
@@ -108,21 +111,21 @@ arbol2 <- rpart(PESO ~
 
 rpart.plot(arbol2, type = 2, extra = 0, under = TRUE, 
            fallen.leaves = TRUE, box.palette = "BuGn",
-           main = "ADUANA Y VIA", cex = 0.5)
+           main = "PESO, VIA Y PRODUCTO", cex = 0.5)
 
 
 # CASO 3
-arbol3 <- rpart(ADUANA ~
+arbol3 <- rpart(VIA ~
                   SAC +
                   Continente +
-                  VIA+
+                  ADUANA+
                   VALOR,
                 data = data_history, method = "class")
 
 
 rpart.plot(arbol3, type = 2, extra = 0, under = TRUE, 
            fallen.leaves = TRUE, box.palette = "BuGn",
-           main = "ADUANA Y VIA", cex = 0.5)
+           main = "Aduana, via y contiente", cex = 0.5)
 
 
 # CASO 4
@@ -137,4 +140,14 @@ arbol4 <- rpart(PAIS ~
 
 rpart.plot(arbol4, type = 2, extra = 0, under = TRUE, 
            fallen.leaves = TRUE, box.palette = "BuGn",
-           main = "ADUANA Y VIA", cex = 0.5)
+           main = "PAIS, ADUANA Y VIA", cex = 0.5)
+
+hecho4 <- data.frame(
+  VALOR = 'Pequeñas',
+  PESO = 'xs',
+  VIA = c(2),
+  ADUANA = c(2)
+)
+
+result4 <- predict(arbol4, hecho4, type = "prob")
+result4

@@ -141,7 +141,7 @@ test2  <- case2[-idx2, ]
 bosque2 <- randomForest(
   ANYO ~ VIA + PESO + PAIS,
   data = train2,
-  ntree = 100,
+  ntree = 50,
   mtry = 3
 )
 
